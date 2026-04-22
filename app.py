@@ -26,13 +26,16 @@ A10 = st.sidebar.selectbox("A10", ["Yes", "No"])
 age = st.sidebar.slider("Age", 1, 100, 25)
 gender = st.sidebar.selectbox("Gender", ["Male", "Female"])
 
-# ✅ SAFE handling (no KeyError)
+# Safe dropdowns
 ethnicity = st.sidebar.selectbox(
     "Ethnicity",
     encoders["ethnicity"].classes_ if "ethnicity" in encoders else ["Unknown"]
 )
 
-country = st.sidebar.text_input("Country")  # 🔥 changed to text (safe)
+country = st.sidebar.selectbox(
+    "Country",
+    encoders["country_of_res"].classes_ if "country_of_res" in encoders else ["Unknown"]
+)
 
 jaundice = st.sidebar.selectbox("Jaundice", ["Yes", "No"])
 autism = st.sidebar.selectbox("Autism Family", ["Yes", "No"])
@@ -49,7 +52,7 @@ data = pd.DataFrame({
     "ethnicity":[ethnicity],
     "jaundice":[jaundice],
     "autism":[autism],
-    "country_of_res":[country],  # safe even if encoder missing
+    "country_of_res":[country],
     "used_app_before":[used_app],
     "result":[result]
 })
@@ -66,7 +69,10 @@ for col in encoders:
 yes_no_map = {"Yes": 1, "No": 0}
 for col in data.columns:
     if data[col].dtype == "object":
-        data[col] = data[col].map(yes_no_map).fillna(0)
+        data[col] = data[col].map(yes_no_map)
+
+# 🔥 Convert to numeric (FINAL FIX)
+data = data.apply(pd.to_numeric, errors='coerce').fillna(0)
 
 # 🔥 Fix column order
 data = data.reindex(columns=model.feature_names_in_, fill_value=0)
