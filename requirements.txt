@@ -1,9 +1,9 @@
 streamlit
 pandas
 numpy
-scikit-learn==1.6.1
-imbalanced-learn==0.13.0
-joblib==1.4.2
+scikit-learn
+imbalanced-learn
+joblib
 plotly
 shap
 matplotlib
